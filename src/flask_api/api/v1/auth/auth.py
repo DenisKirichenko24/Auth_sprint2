@@ -2,7 +2,10 @@ from flask_jwt_extended import get_jwt, jwt_required
 from flask_restx import Namespace, Resource, fields, marshal
 from flask_restx._http import HTTPStatus
 
+from flask_api.utils import rate_limit
+
 from ..role.models import role_create_model
+
 
 auth = Namespace('auth', description='Validating access token, authenticate users.')
 
@@ -19,6 +22,7 @@ user_roles_model = auth.model(
 @auth.doc(security='Bearer')
 class Auth(Resource):
     @jwt_required(optional=True)
+    @rate_limit(10)
     @auth.response(int(HTTPStatus.OK), 'User authenticated. Access token valid.', model=user_roles_model)
     @auth.response(int(HTTPStatus.UPGRADE_REQUIRED), 'Anonymous User. No access token found.')
     @auth.response(int(HTTPStatus.UNAUTHORIZED), 'Token expired or revoked. Refresh required.')
