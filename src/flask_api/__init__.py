@@ -1,6 +1,6 @@
 import logging
 
-from flask import Flask
+from flask import Flask, request
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +14,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 
+
 def create_app(config_object):
     app = Flask(__name__)
     app.config.from_object(config_object)
@@ -22,9 +23,18 @@ def create_app(config_object):
     jwt.init_app(app)
     return app
 
+
 def register_blueprints(app):
     from flask_api.api.v1 import apiv1
     app.register_blueprint(apiv1, url_prefix='/api/v1')
 
+
 app = create_app(config.Config)
 register_blueprints(app)
+
+
+@app.before_request
+def before_request():
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        raise RuntimeError('request id is required')

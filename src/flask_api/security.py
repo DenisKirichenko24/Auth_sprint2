@@ -102,6 +102,7 @@ def admin_required(fn) -> Any:
     A decorator to protect an admin only endpoints.
     Should be used after jwt_requred decorator.
     """
+
     @wraps(fn)
     def decorator(*args, **kwargs):
         user_id = get_jwt()['sub']['id']
@@ -109,4 +110,5 @@ def admin_required(fn) -> Any:
         if not user.is_superuser:
             raise NoAuthorizationError('Admin permissions required')
         return fn(*args, **kwargs)
+
     return decorator

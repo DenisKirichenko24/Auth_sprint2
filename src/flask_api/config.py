@@ -27,3 +27,6 @@ class Config:
 
     # REDIS
     REDIS_URL = environ.get('REDIS_URL')
+
+    # JAEGER
+    JAEGER_URL = environ.get('JAEGER_URL', default='localhost')
