@@ -32,6 +32,9 @@ class Config:
     REDIS_URL = environ.get('REDIS_URL')
 
     # Google OAuth2
-    GOOGLE_CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     GOOGLE_CLIENT_ID = environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = environ.get('GOOGLE_CLIENT_SECRET')
+
+    # Yandex OAuth2
+    YANDEX_CLIENT_ID = environ.get('YANDEX_CLIENT_ID')
+    YANDEX_CLIENT_SECRET = environ.get('YANDEX_CLIENT_SECRET')
