@@ -64,7 +64,8 @@ class User(db.Model, IdTimeStampedMixin):
     def verify_password(self, password: str):
         return hasher.verify(password, self._password_hash)
 
-    def add_history(self, action, info=None):
+    def add_history(self, action, info=None, device=None):
+        device = device or 'other'
         row = History(action=action, additional_info=info, user=self)
         db.session.add(row)
         db.session.commit()
@@ -91,9 +92,31 @@ class User(db.Model, IdTimeStampedMixin):
         return f'<User {self.email}>'
 
 
+def create_partition(target, connection, **kw) -> None:
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "history_smart" PARTITION OF "history" FOR VALUES IN ('smart')"""
+    )
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "history_mobile" PARTITION OF "history" FOR VALUES IN ('mobile')"""
+    )
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "history_web" PARTITION OF "history" FOR VALUES IN ('web')"""
+    )
+    connection.execute(
+        """CREATE TABLE IF NOT EXISTS "history_web" PARTITION OF "history" DEFAULT"""
+    )
+
+
 class History(db.Model):
+    __table_args__ = (
+        {
+            'postgresql_partition_by': 'LIST (user_device_type)',
+            'listeners': [('after_create', create_partition)],
+        }
+    )
     user_id = db.Column(db.ForeignKey('user.id'), primary_key=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utc_now, primary_key=True)
     action = db.Column(db.String(255), nullable=True)
     additional_info = db.Column(db.Text)
     user = db.relationship(User, backref='history')
+    user_device_type = db.Column(db.String(255), primary_key=True)
