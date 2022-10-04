@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource
 from flask_restx._http import HTTPStatus
 
 from flask_api.security import admin_required
+from flask_api.traces import trace
 
 from .business import (assign_role, check_user_role, create_role, delete_role,
                        edit_role, get_roles, unassign_role)
@@ -18,6 +19,7 @@ role.models[role_delete_model.name] = role_delete_model
 
 
 @role.route('/manage', endpoint='manage')
+# @trace('manage')
 @role.doc(security='Bearer')
 @role.response(int(HTTPStatus.UNAUTHORIZED), 'Token is invalid or no token or no admin permissions.')
 @role.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
@@ -80,6 +82,7 @@ class Roles(Resource):
 @role.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
 @role.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
 class Assign(Resource):
+    @trace('assign-post')
     @jwt_required()
     @admin_required
     @role.response(int(HTTPStatus.OK), 'Success assigned.')
@@ -90,6 +93,7 @@ class Assign(Resource):
         """
         return assign_role(role.payload)
 
+    @trace('assign-delete')
     @jwt_required()
     @admin_required
     @role.response(int(HTTPStatus.OK), 'Success unassigned.')
@@ -101,6 +105,7 @@ class Assign(Resource):
         """
         return unassign_role(role.payload)
 
+    @trace('assign-get')
     @jwt_required()
     @admin_required
     @role.response(int(HTTPStatus.OK), 'Role assign to the user.')

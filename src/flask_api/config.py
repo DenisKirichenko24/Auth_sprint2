@@ -31,6 +31,9 @@ class Config:
     # REDIS
     REDIS_URL = environ.get('REDIS_URL')
 
+    # JAEGER
+    JAEGER_URL = environ.get('JAEGER_URL', default='localhost')
+    
     # Google OAuth2
     GOOGLE_CLIENT_ID = environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = environ.get('GOOGLE_CLIENT_SECRET')

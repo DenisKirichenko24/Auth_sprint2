@@ -1,7 +1,7 @@
 import logging
-
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
+
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -18,6 +18,7 @@ migrate = Migrate()
 jwt = JWTManager()
 oauth = OAuth()
 
+
 def create_app(config_object):
     app = Flask(__name__)
     app.config.from_object(config_object)
@@ -27,9 +28,18 @@ def create_app(config_object):
     oauth.init_app(app, cache=Cache())
     return app
 
+
 def register_blueprints(app):
     from flask_api.api.v1 import apiv1
     app.register_blueprint(apiv1, url_prefix='/api/v1')
 
+
 app = create_app(config.Config)
 register_blueprints(app)
+
+
+@app.before_request
+def before_request():
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        raise RuntimeError('request id is required')

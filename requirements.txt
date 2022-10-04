@@ -49,3 +49,8 @@ werkzeug==2.1.2; python_version >= "3.7" and python_version < "4" and (python_ve
 wrapt==1.14.1; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.6"
 zope.event==4.5.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_version > "3.5"
 zope.interface==5.4.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_version > "3.5" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version > "3.5"
+opentelemetry-api==1.10.0
+opentelemetry-sdk==1.10.0
+opentelemetry-instrumentation-flask==0.29b1
+opentelemetry-exporter-jaeger==1.10.0
+flake8==4.0

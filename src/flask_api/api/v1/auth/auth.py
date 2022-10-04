@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource, fields, marshal
 from flask_restx._http import HTTPStatus
 
 from ..role.models import role_create_model
+from flask_api.traces import trace
 
 auth = Namespace('auth', description='Validating access token, authenticate users.')
 
@@ -18,6 +19,7 @@ user_roles_model = auth.model(
 @auth.route('', endpoint='auth')
 @auth.doc(security='Bearer')
 class Auth(Resource):
+    @trace('auth')
     @jwt_required(optional=True)
     @auth.response(int(HTTPStatus.OK), 'User authenticated. Access token valid.', model=user_roles_model)
     @auth.response(int(HTTPStatus.UPGRADE_REQUIRED), 'Anonymous User. No access token found.')
