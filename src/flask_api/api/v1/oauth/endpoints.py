@@ -1,5 +1,4 @@
 import logging
-import os
 
 from flask import make_response, request, url_for
 from flask_jwt_extended import get_jwt, jwt_required, set_access_cookies

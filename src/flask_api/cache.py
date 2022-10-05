@@ -1,11 +1,6 @@
-import os
-
-import dotenv
 import redis
 
 from flask_api.config import Config
-
-dotenv.load_dotenv()
 
 
 class Cache:
