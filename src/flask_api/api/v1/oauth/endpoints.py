@@ -5,8 +5,8 @@ from flask import make_response, request, url_for
 from flask_jwt_extended import get_jwt, jwt_required, set_access_cookies
 from flask_restx import Namespace, Resource, abort
 from flask_restx._http import HTTPStatus
-
-from flask_api import oauth
+import enum
+from flask_api import oauth, config
 
 from ..account.models import tokens_model
 from .business import oauth_login_signup
@@ -15,11 +15,16 @@ logger = logging.getLogger()
 
 oauth_ns = Namespace('OAuth', 'SignUp and LogIn via OAuth2')
 
-GOOGLE_CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+
+class Provider(str, enum.Enum):
+    GOOGLE = 'google'
+    YANDEX = 'yandex'
+
+
 if os.environ.get('GOOGLE_CLIENT_ID'):
     oauth.register(
-        name='google',
-        server_metadata_url=GOOGLE_CONF_URL,
+        name=Provider.GOOGLE.value,
+        server_metadata_url=config.Config.GOOGLE_CONF_URL,
         client_kwargs={
             'scope': 'openid email profile'
         }
@@ -35,10 +40,10 @@ def normalize_yandex_userinfo(client, data):
 
 if os.environ.get('YANDEX_CLIENT_ID'):
     oauth.register(
-        name='yandex',
-        api_base_url='https://login.yandex.ru/',
-        access_token_url='https://oauth.yandex.ru/token',
-        authorize_url='https://oauth.yandex.ru/authorize',
+        name=Provider.YANDEX.value,
+        api_base_url=config.Config.YANDEX_API_BASE_URL,
+        access_token_url=config.Config.YANDEX_ACCESS_TOKEN_URL,
+        authorize_url=config.Config.YANDEX_AUTHORIZE_URL,
         userinfo_endpoint='info',
         userinfo_compliance_fix=normalize_yandex_userinfo,
         client_kwargs={

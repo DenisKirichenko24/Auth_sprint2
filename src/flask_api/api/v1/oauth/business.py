@@ -1,17 +1,18 @@
 import logging
 import secrets
 import string
+from typing import NoReturn
 
 from flask_restx import abort
 from flask_restx._http import HTTPStatus
 
 from flask_api.models import OAuthAccount, User, db
-from flask_api.security import create_tokens
+from flask_api.security import TokensResponse, create_tokens
 
 logger = logging.getLogger()
 
 
-def oauth_login_signup(sub, issuer, email, current_user):
+def oauth_login_signup(sub: str, issuer: str, email: str, current_user: dict) -> NoReturn | TokensResponse:
     oauth_user: User | None = User.find_by_oauth(issuer, sub)
     jwt_user: User | None = None
     if current_user:  # Токен передан, пользователь известен

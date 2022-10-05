@@ -33,11 +33,15 @@ class Config:
 
     # JAEGER
     JAEGER_URL = environ.get('JAEGER_URL', default='localhost')
-    
+
     # Google OAuth2
     GOOGLE_CLIENT_ID = environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = environ.get('GOOGLE_CLIENT_SECRET')
+    GOOGLE_CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
 
     # Yandex OAuth2
     YANDEX_CLIENT_ID = environ.get('YANDEX_CLIENT_ID')
     YANDEX_CLIENT_SECRET = environ.get('YANDEX_CLIENT_SECRET')
+    YANDEX_API_BASE_URL = 'https://login.yandex.ru/'
+    YANDEX_ACCESS_TOKEN_URL = 'https://oauth.yandex.ru/token'
+    YANDEX_AUTHORIZE_URL = 'https://oauth.yandex.ru/authorize'
