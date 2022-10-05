@@ -1,12 +1,16 @@
 from flask_jwt_extended import get_jwt, jwt_required
 from flask_restx import Namespace, Resource
 from flask_restx._http import HTTPStatus
+from flask_expects_json import expects_json
 
 from .business import (changing, completely_logout, create_user, get_history,
                        login_user, logout_user, refresh_tokens)
 from .models import (changing_model, create_model, history_model, login_model,
                      tokens_model)
+from flask_api.utils import rate_limit
+from flask_api.api.v1.schemas import SignUpView, LoginView, RefreshView, ChangeCredsView
 from flask_api.traces import trace
+
 
 acc = Namespace('account', description='Account operations', validate=True)
 acc.models[create_model.name] = create_model
@@ -18,6 +22,8 @@ acc.models[history_model.name] = history_model
 
 @acc.route('/signup', endpoint='signup')
 class SignUp(Resource):
+    @rate_limit(10)
+    @expects_json(SignUpView)
     @trace('signup')
     @acc.expect(create_model)
     @acc.marshal_with(tokens_model, code=HTTPStatus.CREATED)
@@ -31,6 +37,8 @@ class SignUp(Resource):
 
 @acc.route('/login', endpoint='login')
 class LogIn(Resource):
+    @rate_limit(10)
+    @expects_json(LoginView)
     @trace('login')
     @acc.expect(login_model)
     @acc.marshal_with(tokens_model, code=HTTPStatus.OK)
@@ -82,6 +90,8 @@ class LogOutComplete(Resource):
 
 @acc.route('/refresh', endpoint='refresh')
 class TokensRefresh(Resource):
+    @rate_limit(10)
+    @expects_json(RefreshView)
     @trace('refresh')
     @jwt_required(refresh=True)
     @acc.doc(security='Bearer')
@@ -100,6 +110,8 @@ class TokensRefresh(Resource):
 
 @acc.route('/changing-cridentials', endpoint='changing')
 class Change(Resource):
+    @rate_limit(10)
+    @expects_json(ChangeCredsView)
     @trace('changing')
     @jwt_required()
     @acc.doc(security='Bearer')
@@ -121,6 +133,7 @@ class Change(Resource):
 
 @acc.route('/history', endpoint='history')
 class UserHistory(Resource):
+    @rate_limit(10)
     @trace('history')
     @jwt_required()
     @acc.doc(security='Bearer')

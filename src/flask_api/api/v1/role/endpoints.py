@@ -3,6 +3,7 @@ from flask_restx import Namespace, Resource
 from flask_restx._http import HTTPStatus
 
 from flask_api.security import admin_required
+from flask_api.utils import rate_limit
 from flask_api.traces import trace
 
 from .business import (assign_role, check_user_role, create_role, delete_role,
@@ -24,6 +25,7 @@ role.models[role_delete_model.name] = role_delete_model
 @role.response(int(HTTPStatus.UNAUTHORIZED), 'Token is invalid or no token or no admin permissions.')
 @role.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
 class Roles(Resource):
+    @rate_limit(10)
     @jwt_required()
     @admin_required
     @role.expect(role_create_model)
@@ -39,6 +41,7 @@ class Roles(Resource):
 
     @jwt_required()
     @admin_required
+    @rate_limit(10)
     @role.marshal_list_with(role_create_model, code=HTTPStatus.OK)
     def get(self):
         """
@@ -49,6 +52,7 @@ class Roles(Resource):
 
     @jwt_required()
     @admin_required
+    @rate_limit(10)
     @role.expect(role_patch_model)
     @role.marshal_with(role_create_model, code=HTTPStatus.OK)
     @role.response(int(HTTPStatus.CONFLICT), 'Role with given name exists.')
@@ -63,6 +67,7 @@ class Roles(Resource):
 
     @jwt_required()
     @admin_required
+    @rate_limit(10)
     @role.expect(role_delete_model)
     @role.response(int(HTTPStatus.OK), 'Role deleted.')
     @role.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
@@ -108,6 +113,7 @@ class Assign(Resource):
     @trace('assign-get')
     @jwt_required()
     @admin_required
+    @rate_limit(10)
     @role.response(int(HTTPStatus.OK), 'Role assign to the user.')
     @role.response(int(HTTPStatus.NOT_FOUND), "Role doesn't assign to the user.")
     def get(self):
