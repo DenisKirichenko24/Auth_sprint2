@@ -9,4 +9,4 @@
 
 Администратора можно создать только через коммандную строку приложения: flask create-superuser, далее следуйте указаниям на экране
 
-Адрес репозитория: https://github.com/DenisKirichenko24/Auth_sprint2
+Адрес репозитория: https://github.com/DenisKirichenko24/Auth_sprint_1
