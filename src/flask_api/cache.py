@@ -3,6 +3,8 @@ import os
 import dotenv
 import redis
 
+from flask_api.config import Config
+
 dotenv.load_dotenv()
 
 
@@ -10,7 +12,7 @@ class Cache:
     base: int = 0
 
     def __init__(self):
-        url = f"{os.environ.get('REDIS_URL')}/{Cache.base}"
+        url = f"{Config.REDIS_URL}/{Cache.base}"
         Cache.base += 1
         self.cache = redis.from_url(url, max_connections=20, decode_responses=True)
 
