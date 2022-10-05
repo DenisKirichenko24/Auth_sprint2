@@ -9,6 +9,8 @@ from .models import (changing_model, create_model, history_model, login_model,
                      tokens_model)
 from flask_api.utils import rate_limit
 from flask_api.api.v1.schemas import SignUpView, LoginView, RefreshView, ChangeCredsView
+from flask_api.traces import trace
+
 
 acc = Namespace('account', description='Account operations', validate=True)
 acc.models[create_model.name] = create_model
@@ -22,6 +24,7 @@ acc.models[history_model.name] = history_model
 class SignUp(Resource):
     @rate_limit(10)
     @expects_json(SignUpView)
+    @trace('signup')
     @acc.expect(create_model)
     @acc.marshal_with(tokens_model, code=HTTPStatus.CREATED)
     @acc.response(int(HTTPStatus.CONFLICT), 'Email address is already registered.')
@@ -36,6 +39,7 @@ class SignUp(Resource):
 class LogIn(Resource):
     @rate_limit(10)
     @expects_json(LoginView)
+    @trace('login')
     @acc.expect(login_model)
     @acc.marshal_with(tokens_model, code=HTTPStatus.OK)
     @acc.response(int(HTTPStatus.UNAUTHORIZED), 'Email and/or password does not match.')
@@ -48,6 +52,7 @@ class LogIn(Resource):
 
 @acc.route('/logout', endpoint='logout')
 class LogOut(Resource):
+    @trace('logout')
     @jwt_required()
     @acc.doc(security='Bearer')
     @acc.response(int(HTTPStatus.OK), 'Succeeded, tokens is no longer valid.')
@@ -66,10 +71,11 @@ class LogOut(Resource):
 
 @acc.route('/logout-all-sessions', endpoint='completely_logout')
 class LogOutComplete(Resource):
+    @trace('completely_logout')
     @jwt_required()
     @acc.doc(security='Bearer')
     @acc.marshal_with(tokens_model, code=HTTPStatus.OK, description='Succeeded, all user tokens is no longer valid. '
-                      'New tokens issued.')
+                                                                    'New tokens issued.')
     @acc.response(int(HTTPStatus.UNAUTHORIZED), 'Token is expired or revoked. Refresh process required.')
     @acc.response(int(HTTPStatus.UNPROCESSABLE_ENTITY), 'Token is invalid or no token.')
     @acc.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Internal server error.')
@@ -86,6 +92,7 @@ class LogOutComplete(Resource):
 class TokensRefresh(Resource):
     @rate_limit(10)
     @expects_json(RefreshView)
+    @trace('refresh')
     @jwt_required(refresh=True)
     @acc.doc(security='Bearer')
     @acc.marshal_with(tokens_model, code=HTTPStatus.OK)
@@ -105,6 +112,7 @@ class TokensRefresh(Resource):
 class Change(Resource):
     @rate_limit(10)
     @expects_json(ChangeCredsView)
+    @trace('changing')
     @jwt_required()
     @acc.doc(security='Bearer')
     @acc.expect(changing_model)
@@ -126,6 +134,7 @@ class Change(Resource):
 @acc.route('/history', endpoint='history')
 class UserHistory(Resource):
     @rate_limit(10)
+    @trace('history')
     @jwt_required()
     @acc.doc(security='Bearer')
     @acc.marshal_list_with(history_model, code=HTTPStatus.OK)

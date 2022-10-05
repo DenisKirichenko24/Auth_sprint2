@@ -6,6 +6,7 @@ class Config:
     # Flask
     FLASK_ENV = environ.get('FLASK_ENV', 'production')
     PROPAGATE_EXCEPTIONS = True
+    SECRET_KEY = environ.get('SECRET_KEY', 'Super_key!')
 
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = (f'postgresql://{environ.get("DB_USERNAME")}:{environ.get("DB_PASSWORD")}@'
@@ -18,7 +19,9 @@ class Config:
 
     # JWT Extended
     JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
+    JWT_ERROR_MESSAGE_KEY = 'message'
     JWT_TOKEN_LOCATION = 'headers'
+    JWT_COOKIE_SECURE = environ.get('JWT_COOKIE_SECURE', True)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(weeks=4)
 
@@ -27,3 +30,14 @@ class Config:
 
     # REDIS
     REDIS_URL = environ.get('REDIS_URL')
+
+    # JAEGER
+    JAEGER_URL = environ.get('JAEGER_URL', default='localhost')
+    
+    # Google OAuth2
+    GOOGLE_CLIENT_ID = environ.get('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = environ.get('GOOGLE_CLIENT_SECRET')
+
+    # Yandex OAuth2
+    YANDEX_CLIENT_ID = environ.get('YANDEX_CLIENT_ID')
+    YANDEX_CLIENT_SECRET = environ.get('YANDEX_CLIENT_SECRET')

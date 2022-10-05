@@ -5,6 +5,7 @@ from flask_restx._http import HTTPStatus
 from flask_api.utils import rate_limit
 
 from ..role.models import role_create_model
+from flask_api.traces import trace
 
 
 auth = Namespace('auth', description='Validating access token, authenticate users.')
@@ -21,6 +22,7 @@ user_roles_model = auth.model(
 @auth.route('', endpoint='auth')
 @auth.doc(security='Bearer')
 class Auth(Resource):
+    @trace('auth')
     @jwt_required(optional=True)
     @rate_limit(10)
     @auth.response(int(HTTPStatus.OK), 'User authenticated. Access token valid.', model=user_roles_model)
