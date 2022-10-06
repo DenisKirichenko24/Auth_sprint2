@@ -1,5 +1,4 @@
 import logging
-import os
 
 from flask import make_response, request, url_for
 from flask_jwt_extended import get_jwt, jwt_required, set_access_cookies
@@ -10,6 +9,7 @@ from flask_api import oauth, config
 
 from ..account.models import tokens_model
 from .business import oauth_login_signup
+from flask_api.config import Config 
 
 logger = logging.getLogger()
 
@@ -21,7 +21,7 @@ class Provider(str, enum.Enum):
     YANDEX = 'yandex'
 
 
-if os.environ.get('GOOGLE_CLIENT_ID'):
+if Config.GOOGLE_CLIENT_ID:
     oauth.register(
         name=Provider.GOOGLE.value,
         server_metadata_url=config.Config.GOOGLE_CONF_URL,
@@ -38,7 +38,7 @@ def normalize_yandex_userinfo(client, data):
     }
 
 
-if os.environ.get('YANDEX_CLIENT_ID'):
+if Config.YANDEX_CLIENT_ID:
     oauth.register(
         name=Provider.YANDEX.value,
         api_base_url=config.Config.YANDEX_API_BASE_URL,

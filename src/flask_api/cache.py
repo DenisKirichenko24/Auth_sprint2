@@ -1,16 +1,13 @@
-import os
-
-import dotenv
 import redis
 
-dotenv.load_dotenv()
+from flask_api.config import Config
 
 
 class Cache:
     base: int = 0
 
     def __init__(self):
-        url = f"{os.environ.get('REDIS_URL')}/{Cache.base}"
+        url = f"{Config.REDIS_URL}/{Cache.base}"
         Cache.base += 1
         self.cache = redis.from_url(url, max_connections=20, decode_responses=True)
 
