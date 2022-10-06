@@ -1,32 +1,38 @@
+import datetime
 from datetime import timedelta
 from os import environ
+from pydantic import BaseSettings, Field
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
 # Testing configuration------------------------------------------------------
 
 
-class TestConfig:
+class TestConfig(BaseSettings):
     # Flask
-    FLASK_ENV = environ.get('FLASK_ENV', 'production')
-    PROPAGATE_EXCEPTIONS = True
-    TESTING = True
+    FLASK_ENV: str = Field('production', env='FLASK_ENV')
+
+    PROPAGATE_EXCEPTIONS: bool = Field(True)
+    TESTING: bool = Field(True)
 
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = (f'postgresql://{environ.get("DB_USERNAME")}:{environ.get("DB_PASSWORD")}@'
-                               f'{environ.get("DB_HOST")}:{environ.get("DB_PORT", 5432)}/{environ.get("DB_NAME")}_test')
+    SQLALCHEMY_DATABASE_URI: str = Field(
+        f'postgresql://{environ.get("DB_USERNAME")}:{environ.get("DB_PASSWORD")}@'
+        f'{environ.get("DB_HOST")}:{environ.get("DB_PORT", 5432)}/{environ.get("DB_NAME")}_test')
 
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
     }
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS: bool = Field(True)
 
     # JWT Extended
-    JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
-    JWT_TOKEN_LOCATION = 'headers'
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=2)
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=3)
+    JWT_SECRET_KEY: str = Field(env='JWT_SECRET_KEY')
+    JWT_TOKEN_LOCATION: str = Field(env='headers')
+    JWT_ACCESS_TOKEN_EXPIRES: datetime.timedelta = Field(timedelta(seconds=2))
+    JWT_REFRESH_TOKEN_EXPIRES: datetime.timedelta = Field(timedelta(seconds=2))
 
     # REST-X
-    RESTX_MASK_SWAGGER = False
+    RESTX_MASK_SWAGGER: bool = Field(True)
